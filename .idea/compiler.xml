@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
-      <module name="dc_srv" target="1.8" />
-      <module name="dc_srv_api" target="1.8" />
-    </bytecodeTargetLevel>
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="dc_srv_api" />
+        <module name="dc_srv" />
+      </profile>
+    </annotationProcessing>
   </component>
 </project>
