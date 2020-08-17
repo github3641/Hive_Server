@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>DcHiveQueryServer_Sp</module>
-        <module>DcHiveQueryServer_Lrc</module>
+        <module>dc_srv</module>
+        <module>dc_srv_api</module>
     </modules>
 
     <properties>
