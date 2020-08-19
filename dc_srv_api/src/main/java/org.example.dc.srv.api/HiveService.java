@@ -1,5 +1,6 @@
 package org.example.dc.srv.api;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -13,6 +14,6 @@ import java.util.Map;
  * Description:
  */
 public interface HiveService {
-    Map<String,String> qureyDataToJson(Map<String,String> map);
+    Map<String,String> qureyDataToJson(Map<String,String> map) throws SQLException, IOException;
     Map<String,String> qureyDataToExcel(Map<String,String> map);
 }

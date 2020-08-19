@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class HiveQuery implements HiveService {
      * @return
      */
     @Override
-    public Map<String,String> qureyDataToJson(Map<String,String> map) throws Exception {
+    public Map<String,String> qureyDataToJson(Map<String,String> map) throws SQLException, IOException {
         Map result = new HashMap();
         //1.解析传入参数
         logger.info("开始解析传入参数");
@@ -46,13 +47,14 @@ public class HiveQuery implements HiveService {
         //2.获取hive连接
         Connection conn = null;
         Statement stmt = null;
+
         try {
             conn = HiveJDBCUtil.getConn();
             stmt = HiveJDBCUtil.getStmt(conn);
-        } catch (Exception e) {
-           System.out.println("获取连接失败!");
-           throw e;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
+
         //2.根据传入参数查询，并写入文件
         if (queryMode!=null){
             if (CUSTOM_MODE.equals(queryMode)){
