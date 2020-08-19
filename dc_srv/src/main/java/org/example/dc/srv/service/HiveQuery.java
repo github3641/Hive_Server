@@ -24,12 +24,12 @@ import java.util.Map;
  * Description:
  */
 public class HiveQuery implements HiveService {
-    Logger logger = LoggerFactory.getLogger(HiveQuery.class);
-    public static final String QUERY_MODE="QueryMode";//查询模式
-    public static final String CUSTOM_MODE="CustomQuery";//自定义模式
-    public static final String STANDARD_MODE="StandardQuery";//标准模式
-    public static final String QUERY_SQL="QuerySql";//查询SQL
-    public static final String PATH_NAME="D:\\WorkSpace\\Hive_Server\\dc_srv\\src\\main\\resources\\test.txt";
+    private static final Logger logger = LoggerFactory.getLogger(HiveQuery.class);
+    private static final String QUERY_MODE="QueryMode";//查询模式
+    private static final String CUSTOM_MODE="CustomQuery";//自定义模式
+    private static final String STANDARD_MODE="StandardQuery";//标准模式
+    private static final String QUERY_SQL="QuerySql";//查询SQL
+    private static final String PATH_NAME="D:\\WorkSpace\\Hive_Server\\dc_srv\\src\\main\\resources\\test.txt";
     /**
      * 方法说明:根据传入参数，查询hive数仓，
      * 将返回结果保存为json格式文件，并返回文件
