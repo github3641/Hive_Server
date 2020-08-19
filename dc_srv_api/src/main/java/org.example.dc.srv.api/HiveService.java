@@ -13,5 +13,6 @@ import java.util.Map;
  * Description:
  */
 public interface HiveService {
-    Map<String,String> qureyData(Map<String,String> map) throws SQLException;
+    Map<String,String> qureyDataToJson(Map<String,String> map);
+    Map<String,String> qureyDataToExcel(Map<String,String> map);
 }

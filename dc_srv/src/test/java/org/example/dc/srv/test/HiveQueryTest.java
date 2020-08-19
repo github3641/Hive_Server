@@ -21,7 +21,7 @@ public class HiveQueryTest {
         String sql="select * from easylife_app.app_easylife_order_should_sum_day where cal_day = '2020-08-17' limit 2";
         parameter.put("QuerySql",sql);
         HiveService hq = new HiveQuery();
-        Map<String, String> result = hq.qureyData(parameter);
+        Map<String, String> result = hq.qureyDataToJson(parameter);
         String filePath = result.get("FilePath");
         String executionStatus = result.get("ExecutionStatus");
         System.out.println("查询结果的文件存储路径为:"+filePath);
