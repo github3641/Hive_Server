@@ -20,6 +20,7 @@
         <project.report.inputEncoding>UTF-8</project.report.inputEncoding>
         <jdk.version>1.8</jdk.version>
         <hive.version>1.1.0</hive.version>
+        <fastjson.version>1.2.62</fastjson.version>
         <hadoop.version>2.6.0</hadoop.version>
     </properties>
 
@@ -29,6 +30,16 @@
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-jdbc</artifactId>
             <version>${hive.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>${hadoop.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.javatuples/javatuples -->
