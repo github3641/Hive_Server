@@ -37,7 +37,7 @@ public class HiveQuery implements HiveService {
      * @return
      */
     @Override
-    public Map<String,String> qureyData(Map<String,String> map) throws Exception {
+    public Map<String,String> qureyDataToJson(Map<String,String> map) throws Exception {
         Map result = new HashMap();
         //1.解析传入参数
         logger.info("开始解析传入参数");
@@ -97,5 +97,10 @@ public class HiveQuery implements HiveService {
         }
         //3.返回结果
         return result;
+    }
+
+    @Override
+    public Map<String, String> qureyDataToExcel(Map<String, String> map) {
+        return null;
     }
 }
