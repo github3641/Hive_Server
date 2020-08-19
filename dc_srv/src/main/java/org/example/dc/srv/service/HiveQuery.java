@@ -101,8 +101,73 @@ public class HiveQuery implements HiveService {
         return result;
     }
 
+
+    /***
+     * 方法说明：
+     * 根据传入的查询模式值来判断sql是否需要拼接，
+     * 执行查询后将查询的值写入excel中，
+     * 返回excel文件位置以及结束状态。
+     * @param map
+     * @return
+     */
     @Override
     public Map<String, String> qureyDataToExcel(Map<String, String> map) {
-        return null;
+
+        Map resultMap = new HashMap();
+        //解析传入参数
+        logger.info("开始解析传入参数");
+        String queryMode = map.get(QUERY_MODE);
+        String querySql = map.get(QUERY_SQL);
+        //获取hive连接
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = HiveJDBCUtil.getConn();
+            statement = HiveJDBCUtil.getStmt(connection);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        //判断所需参数是否为null
+        if(queryMode == null){
+            throw new RuntimeException("请输入查询模式参数");
+        }else if(CUSTOM_MODE.equals(queryMode) && querySql == null){
+            throw new RuntimeException("自定义模式下，请输入查询SQL");
+        }
+
+        //根据传入的查询模式来判断sql是否需要拼接
+        if(CUSTOM_MODE.equals(queryMode)){
+            //自定义查询模式
+            ResultSet resultSet = null;
+            try {
+                resultSet = statement.executeQuery(querySql);
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                while(resultSet.next()){
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        System.out.print(metaData.getColumnName(i)+"<-->"+resultSet.getObject(i)+"  ");
+                    }
+                    System.out.println();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+        }else if(STANDARD_MODE.equals(queryMode)){
+            //sql拼接方式
+
+
+        }else{
+            //查询模式未匹配，报异常
+            throw new RuntimeException("查询模式未匹配");
+        }
+
+
+
+
+
+
+
+
+        return resultMap;
     }
 }

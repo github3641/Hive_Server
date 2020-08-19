@@ -22,5 +22,7 @@ public interface HiveService {
 
 
 
-    Map<String,String> qureyDataToExcel(Map<String,String> map);
+
+    Map<String,String> qureyDataToExcel(Map<String,String> map) throws SQLException;
+
 }
