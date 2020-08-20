@@ -1,8 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
-.idea
+.idea/
 *.iml
 *.tar
 *.zip
 *.tar.gz
 *.gz
 /target/
+

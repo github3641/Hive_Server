@@ -25,6 +25,7 @@ import java.util.Map;
  * Description:
  */
 public class HiveQuery implements HiveService {
+
     Logger logger = LoggerFactory.getLogger(HiveQuery.class);
     public static final String QUERY_MODE="QueryMode";//查询模式
     public static final String CUSTOM_MODE="CustomQuery";//自定义模式

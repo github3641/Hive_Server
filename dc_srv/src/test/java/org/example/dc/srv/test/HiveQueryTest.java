@@ -23,7 +23,7 @@ public class HiveQueryTest {
         HiveService hq = new HiveQuery();
         Map<String, String> result = hq.qureyDataToJson(parameter);
         String filePath = result.get("FilePath");
-        String executionStatus = result.get("ExecutionStatus");
+        Object executionStatus = result.get("ExecutionStatus");
         System.out.println("查询结果的文件存储路径为:"+filePath);
         System.out.println("执行状态为:"+executionStatus);
     }
