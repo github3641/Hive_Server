@@ -20,10 +20,20 @@ public class HiveToExcelTest {
 
     public static void main(String[] args) {
         HashMap<String, String> parameter = new HashMap();
-        parameter.put("QueryMode","CustomQuery");
-        String sql="select count(1) as count from easylife_ods.ods_easylife_order";
-        parameter.put("QuerySql",sql);
+//
+//        parameter.put("QueryMode","CustomQuery");
+//        String sql="select count(1) as count from easylife_ods.ods_easylife_order";
+//        parameter.put("QuerySql",sql);
+//        HiveQueryService hq = new HiveQuery();
+
+        parameter.put("QueryMode","StandardQuery");
+//        String sql="select count(1) as count from easylife_ods.ods_easylife_order";
+//        parameter.put("QuerySql",sql);
+        parameter.put("COLUMNS", null);
+        parameter.put("TABLENAME","easylife_ods.ods_easylife_order");
+        parameter.put("OTHER_PARAMETER", "limit 10");
         HiveQueryService hq = new HiveQuery();
+
         try {
             Map<String, String> stringStringMap = hq.qureyDataToExcel(parameter);
         } catch (SQLException e) {

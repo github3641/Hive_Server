@@ -3,6 +3,7 @@ package org.example.dc.srv.service;
 import com.alibaba.fastjson.JSONObject;
 import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.enums.ExecutionStatusEnum;
+import org.example.dc.srv.utils.ComposeSqlUtil;
 import org.example.dc.srv.utils.HiveJDBCUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,11 @@ public class HiveQuery implements HiveQueryService{
     private static final String CUSTOM_MODE="customQuery";//自定义模式
     private static final String STANDARD_MODE="standardQuery";//标准模式
     private static final String QUERY_SQL="querySql";//查询SQL
+    public static final String COLUMNS="COLUMNS";
+    public static final String PARTCOLUMN="PARTCOLUMN";
+    public static final String TABLENAME="TABLENAME";
+    public static final String OTHER_PARAMETER="OTHER_PARAMETER";
+
     /**
      * 方法说明:根据传入参数，查询hive数仓，
      * 将返回结果转换为json格式并保存到文件，返回文件
@@ -123,23 +129,41 @@ public class HiveQuery implements HiveQueryService{
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
-
-        }else if(STANDARD_MODE.equals(queryMode)){
             //sql拼接方式
+        }else if(STANDARD_MODE.equals(queryMode)){
+
+            //读取拼接sql所用参数
+            String columns = map.get(COLUMNS);
+            String partColumn = map.get(PARTCOLUMN);
+            String tableName = map.get(TABLENAME);
+            String other_parameter = map.get(OTHER_PARAMETER);
+            //传入参数，产出拼接好的SQL
+            Map mapToSql = new HashMap();
+            mapToSql.put(COLUMNS,columns);
+            mapToSql.put(PARTCOLUMN,partColumn);
+            mapToSql.put(TABLENAME,tableName);
+            mapToSql.put(OTHER_PARAMETER,other_parameter);
+            String sql = ComposeSqlUtil.getSql(mapToSql);
+            //标准查询模式
+            ResultSet resultSet = null;
+            try {
+                resultSet = statement.executeQuery(sql);
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                while(resultSet.next()){
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        System.out.print(metaData.getColumnName(i)+"<-->"+resultSet.getObject(i)+" ");
+                    }
+                    System.out.println();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
 
         }else{
             //查询模式未匹配，报异常
             throw new RuntimeException("查询模式未匹配");
         }
-
-
-
-
-
-
-
 
         return resultMap;
     }
