@@ -13,7 +13,7 @@ import java.util.Map;
  * Version: 1.0
  * Description:
  */
-public interface HiveService {
+public interface HiveQueryService {
 
 
 

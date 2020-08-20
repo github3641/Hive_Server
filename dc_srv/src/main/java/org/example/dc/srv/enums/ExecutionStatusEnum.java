@@ -10,25 +10,14 @@ package org.example.dc.srv.enums;
  * Description:
  */
 public enum ExecutionStatusEnum {
-    RUNNING(100, "running"),
-    SUCCESS(200, "success"),
-    FAILED(300, "failed"),;
-    private int code;
+    RUNNING("running"),
+    SUCCESS("success"),
+    FAILED("failed"),;
     private String msg;
 
-    ExecutionStatusEnum(int code, String msg) {
-        this.code = code;
+    ExecutionStatusEnum( String msg) {
         this.msg = msg;
     }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
     public String getMsg() {
         return msg;
     }

@@ -1,6 +1,6 @@
 package org.example.dc.srv.test;
 
-import org.example.dc.srv.api.HiveService;
+import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.service.HiveQuery;
 
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ public class HiveToExcelTest {
         parameter.put("QueryMode","CustomQuery");
         String sql="select count(1) as count from easylife_ods.ods_easylife_order";
         parameter.put("QuerySql",sql);
-        HiveService hq = new HiveQuery();
+        HiveQueryService hq = new HiveQuery();
         try {
             Map<String, String> stringStringMap = hq.qureyDataToExcel(parameter);
         } catch (SQLException e) {
