@@ -5,5 +5,5 @@
 *.zip
 *.tar.gz
 *.gz
-/target/
+*/target/*
 
