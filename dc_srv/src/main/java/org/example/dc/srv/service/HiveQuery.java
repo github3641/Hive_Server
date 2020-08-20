@@ -5,6 +5,7 @@ import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.enums.ExecutionStatusEnum;
 import org.example.dc.srv.utils.ComposeSqlUtil;
 import org.example.dc.srv.utils.HiveJDBCUtil;
+import org.example.dc.srv.utils.WriteExcelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.BufferedWriter;
@@ -12,7 +13,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,6 +95,7 @@ public class HiveQuery implements HiveQueryService{
     @Override
     public Map<String, String> qureyDataToExcel(Map<String, String> map) {
 
+        String filePath = "F:\\test_excel_write\\easylife_order导出_20200820.xlsx";
         Map resultMap = new HashMap();
         //解析传入参数
         logger.info("开始解析传入参数");
@@ -146,15 +150,33 @@ public class HiveQuery implements HiveQueryService{
             String sql = ComposeSqlUtil.getSql(mapToSql);
             //标准查询模式
             ResultSet resultSet = null;
+            List<Map> list = new ArrayList();
+            Map<String,String> rowMap;
+            boolean flag = true;
+            List<String> topList = new ArrayList();
             try {
                 resultSet = statement.executeQuery(sql);
                 ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
                 while(resultSet.next()){
-                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                        System.out.print(metaData.getColumnName(i)+"<-->"+resultSet.getObject(i)+" ");
+                    rowMap = new HashMap();
+                    for (int i = 1; i <= columnCount; i++) {
+                        Object object = resultSet.getObject(i);
+                        String value = null;
+                        if (object != null) {
+                            value = object.toString();
+                        }
+                        String columnName = metaData.getColumnName(i);
+                        rowMap.put(columnName,value);
+                        if(flag){
+                            topList.add(columnName);
+                        }
                     }
-                    System.out.println();
+                    list.add(rowMap);
+                    flag=false;
                 }
+                WriteExcelUtil.writeExcel(list,columnCount,filePath,topList);
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }

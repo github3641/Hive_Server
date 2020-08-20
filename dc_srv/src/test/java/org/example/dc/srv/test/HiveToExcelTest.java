@@ -26,12 +26,12 @@ public class HiveToExcelTest {
 //        parameter.put("QuerySql",sql);
 //        HiveQueryService hq = new HiveQuery();
 
-        parameter.put("QueryMode","StandardQuery");
+        parameter.put("queryMode","standardQuery");
 //        String sql="select count(1) as count from easylife_ods.ods_easylife_order";
 //        parameter.put("QuerySql",sql);
-        parameter.put("COLUMNS", null);
+//        parameter.put("COLUMNS", "id,dw_day");
         parameter.put("TABLENAME","easylife_ods.ods_easylife_order");
-        parameter.put("OTHER_PARAMETER", "limit 10");
+        parameter.put("OTHER_PARAMETER", "limit 100");
         HiveQueryService hq = new HiveQuery();
 
         try {
