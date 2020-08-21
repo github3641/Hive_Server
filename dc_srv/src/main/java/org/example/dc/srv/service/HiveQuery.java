@@ -215,7 +215,9 @@ public class HiveQuery implements HiveQueryService {
             querySql = sql;
         } else if ("customQuery".equals(queryMode) && sql == null) {
             throw new RuntimeException("选择自定义查询模式下，请正确传入自定义sql!");
-        } else if ("standardQuery".equals(queryMode) && "tableName" != null) {
+
+        }else if("standardQuery".equals(queryMode)&& tableName!=null){
+
             String sql2 = ComposeSqlUtil.getSql(map);
             querySql = sql2;
         } else {
