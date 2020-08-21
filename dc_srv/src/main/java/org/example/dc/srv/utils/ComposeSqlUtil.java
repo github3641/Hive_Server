@@ -14,10 +14,10 @@ import java.util.Map;
  */
 public class ComposeSqlUtil {
 
-    public static final String COLUMNS="COLUMNS";
-    public static final String PARTCOLUMN="PARTCOLUMN";
-    public static final String TABLENAME="TABLENAME";
-    public static final String OTHER_PARAMETER="OTHER_PARAMETER";
+    public static final String COLUMNS="columns";
+    public static final String PARTCOLUMN="partcolumn";
+    public static final String TABLENAME="tableName";
+    public static final String OTHER_PARAMETER="otherParameter";
 
     /***
      * 通过传入参数，返回可执行SQL

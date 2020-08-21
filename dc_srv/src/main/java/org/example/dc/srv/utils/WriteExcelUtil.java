@@ -10,12 +10,22 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
 import java.util.*;
 
+
+/**
+ * Project: Hive_Server
+ * Package: org.example.dc.srv.utils
+ * Class: WriteExcelUtil
+ * Author: Peng Sun
+ * Date: 2020/8/21
+ * Version: 1.0
+ * Description:
+ */
 public class WriteExcelUtil {
 
     private static final String EXCEL_XLS = "xls";
     private static final String EXCEL_XLSX = "xlsx";
 
-    public static void writeExcel(List<Map> dataList, int cloumnCount, String finalXlsxPath,List<String> topList) {
+    public static void writeExcel(List<Map> dataList, int cloumnCount, String finalXlsxPath, List<String> topList) {
         OutputStream out = null;
         try {
             // 获取总列数
@@ -98,7 +108,7 @@ public class WriteExcelUtil {
     public static Workbook getWorkbok(File file) throws IOException {
         Workbook wb = null;
         FileInputStream in = new FileInputStream(file);
-        if (file.getName().endsWith(EXCEL_XLS)) {     //Excel&nbsp;2003
+        if (file.getName().endsWith(EXCEL_XLS)) {     //Excel 2003
             wb = new HSSFWorkbook(in);
         } else if (file.getName().endsWith(EXCEL_XLSX)) {    // Excel 2007/2010
             wb = new XSSFWorkbook(in);
