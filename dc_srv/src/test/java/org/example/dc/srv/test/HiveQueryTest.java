@@ -30,13 +30,10 @@ public class HiveQueryTest {
         try {
             result = hq.qureyDataToJson(parameter);
         } catch (SQLException e) {
-            e.printStackTrace();
             logger.error("错误信息:"+e);
         } catch (IOException e) {
-            e.printStackTrace();
             logger.error("错误信息:"+e);
         }catch (Exception e){
-            e.printStackTrace();
             logger.error("错误信息:"+e);
         }
         String filePath = result.get("filePath");
