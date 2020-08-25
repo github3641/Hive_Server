@@ -110,12 +110,17 @@ public class HiveQuery implements HiveQueryService {
 
         Map resultMap = new HashMap();
         boolean flag = true;
+        String filePath = null;
         ResultSet resultSet = null;
         List<Map> list = new ArrayList();
         Map<String, String> rowMap;
         List<String> topList = new ArrayList();
         //获取文件路径
-        String filePath = map.get("filePath");
+        if (map.get("filePath") != null) {
+            filePath = map.get("filePath");
+        }else{
+            filePath = "F:\\test_excel_write\\easylife_order导出_20200825.xlsx";
+        }
 
         //获取hive连接
         Connection connection = null;
@@ -216,7 +221,7 @@ public class HiveQuery implements HiveQueryService {
         } else if ("customQuery".equals(queryMode) && sql == null) {
             throw new RuntimeException("选择自定义查询模式下，请正确传入自定义sql!");
 
-        }else if("standardQuery".equals(queryMode)&& tableName!=null){
+        } else if ("standardQuery".equals(queryMode) && tableName != null) {
 
             String sql2 = ComposeSqlUtil.getSql(map);
             querySql = sql2;

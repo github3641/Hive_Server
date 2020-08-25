@@ -37,6 +37,15 @@ public class MyController {
         return resultMap;
     }
 
+    @RequestMapping(value="/queryToExcel")
+    public Map queryToExcel(HttpServletRequest request2){
+        HashMap<String, String> parameterMap2 = getParameterMap(request2);
+        HiveQuery hiveQuery = new HiveQuery();
+        Map<String, String> resultMap=null;
+        resultMap = hiveQuery.qureyDataToExcel(parameterMap2);
+        return resultMap;
+    }
+
     private HashMap<String, String> getParameterMap(HttpServletRequest request) {
         Map<String, String[]> parameterMap = request.getParameterMap();
         Set<String> keys = parameterMap.keySet();

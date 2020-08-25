@@ -32,7 +32,7 @@ public class HiveToExcelTest {
 //        parameter.put("columns", "id,dw_day");
         parameter.put("tableName","easylife_ods.ods_easylife_order");
         parameter.put("otherParameter", "limit 100");
-        parameter.put("filePath","F:\\test_excel_write\\easylife_order导出_20200821.xlsx");
+        parameter.put("filePath","F:\\test_excel_write\\easylife_order导出_20200825.xlsx");
         HiveQueryService hq = new HiveQuery();
 
         try {

@@ -26,32 +26,44 @@ public class WriteExcelUtil {
     private static final String EXCEL_XLSX = "xlsx";
 
     public static void writeExcel(List<Map> dataList, int cloumnCount, String finalXlsxPath, List<String> topList) {
-        OutputStream out = null;
+        OutputStream fos = null;
+        Workbook workBook = null;
+        Sheet sheet = null;
         try {
             // 获取总列数
             int columnNumCount = cloumnCount;
             System.out.println("columnNumCount为：" + columnNumCount);
-            // 读取Excel文档
+            // 判断Excel文件是否存在
             File finalXlsxFile = new File(finalXlsxPath);
-            Workbook workBook = getWorkbok(finalXlsxFile);
-            // sheet 对应一个工作页
-            Sheet sheet = workBook.getSheetAt(0);
-            /**
-             * 删除原有数据，除了属性列
-             */
-            int rowNumber = sheet.getLastRowNum();    // 第一行从0开始算
-            System.out.println("原始数据总行数，除属性列：" + rowNumber);
-            for (int i = 1; i <= rowNumber; i++) {
-                Row row = sheet.getRow(i);
-                sheet.removeRow(row);
+            if (finalXlsxFile.exists()) {
+                //当目标文件存在时，需要将目标文件数据清空并重新写入
+                workBook = getWorkbok(finalXlsxFile);
+                // sheet 对应一个工作页
+                sheet = workBook.getSheetAt(0);
+                //删除原有数据，除了属性列
+                int rowNumber = sheet.getLastRowNum();    // 第一行从0开始算
+                System.out.println("原始数据总行数，除属性列：" + rowNumber);
+                for (int i = 1; i <= rowNumber; i++) {
+                    Row row = sheet.getRow(i);
+                    sheet.removeRow(row);
+                }
+                // 创建文件输出流，输出电子表格：这个必须有，否则你在sheet上做的任何操作都不会有效
+                fos = new FileOutputStream(finalXlsxPath);
+                workBook.write(fos);
+                fos.close();
+            } else if(!finalXlsxFile.exists()){
+                //导出文件不存在时，新建Excel文件
+                workBook = new XSSFWorkbook();
+                sheet = workBook.createSheet();
+                fos = new FileOutputStream(finalXlsxPath);
+                workBook.write(fos);
+                fos.close();
             }
-            // 创建文件输出流，输出电子表格：这个必须有，否则你在sheet上做的任何操作都不会有效
-            out = new FileOutputStream(finalXlsxPath);
-            workBook.write(out);
             /**
              * 往Excel中写新数据
              */
             List<String> listKey = new ArrayList();
+            fos = new FileOutputStream(finalXlsxPath);
 
             for (int i = 0; i < dataList.size(); i++) {
 
@@ -81,15 +93,15 @@ public class WriteExcelUtil {
                 listKey.clear();
             }
             // 创建文件输出流，准备输出电子表格：这个必须有，否则你在sheet上做的任何操作都不会有效
-            out = new FileOutputStream(finalXlsxPath);
-            workBook.write(out);
+            workBook.write(fos);
+            workBook.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (out != null) {
-                    out.flush();
-                    out.close();
+                if (fos != null) {
+                    fos.flush();
+                    fos.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
