@@ -1,4 +1,4 @@
-package org.example.dc.start.controller;
+package org.example.dc.srv.controller;
 
 import org.example.dc.srv.service.HiveQuery;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 /**
  * Project: Hive_Service
- * Package: org.example.dc.start.controller
+ * Package: org.example.dc.srv.controller
  * Class: MyController
  * Author: RuiChao Lv
  * Date: 2020/8/24

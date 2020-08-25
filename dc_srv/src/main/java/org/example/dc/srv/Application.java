@@ -1,4 +1,4 @@
-package org.example.dc.start;
+package org.example.dc.srv;
 
 
 import org.springframework.boot.SpringApplication;
