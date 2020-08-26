@@ -1,7 +1,10 @@
 package org.example.dc.srv.api;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,5 +26,8 @@ public interface HiveQueryService {
 
 
     Map<String,String> queryDataSendMail(Map<String,String> map);
+
+
+    List<JSONObject> getQueryResult(Map<String,String> map) throws SQLException;
 
 }

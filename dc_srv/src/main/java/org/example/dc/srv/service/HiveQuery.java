@@ -5,6 +5,10 @@ import org.apache.commons.mail.EmailException;
 import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.enums.ExecutionStatusEnum;
 import org.example.dc.srv.utils.*;
+import org.example.dc.srv.utils.ComposeSqlUtil;
+import org.example.dc.srv.utils.HiveDataSourceUtil;
+import org.example.dc.srv.utils.HiveJDBCUtil;
+import org.example.dc.srv.utils.WriteExcelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,63 @@ import java.util.*;
 @Service
 public class HiveQuery implements HiveQueryService {
     private static final Logger logger = LoggerFactory.getLogger(HiveQuery.class);
+
+    /***
+     *
+     * @param map
+     * @return 返回的List中, 下标为0的是表头。
+     *         执行list.remove(0)可去除表头
+     */
+    @Override
+    public List<JSONObject> getQueryResult(Map<String, String> map) {
+
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        JSONObject topLine = null;
+        ResultSetMetaData metaData = null;
+        List<JSONObject> listResult = new ArrayList<>();
+
+        try {
+            //获取hive连接
+            connection = HiveDataSourceUtil.getHiveConn();
+            statement = connection.createStatement();
+            //校验传入参数,获取可执行SQL
+            String sql = parameterParsing(map);
+            //获得查询结果
+            resultSet = getResultSet(statement, sql);
+            metaData = resultSet.getMetaData();
+            Boolean flag = true;
+            while (resultSet.next()) {
+                if (flag) {
+                    topLine = new JSONObject();
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        String columnName = metaData.getColumnName(i);
+                        topLine.put(Integer.toString(i), columnName);
+                    }
+                    listResult.add(topLine);
+                    flag = false;
+                }
+
+                JSONObject obj = new JSONObject();
+                for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                    Object object = resultSet.getObject(i);
+                    String value = null;
+                    if (object != null) {
+                        value = object.toString();
+                    }
+                    obj.put(metaData.getColumnName(i), value);
+                }
+                listResult.add(obj);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            HiveDataSourceUtil.closeConn();
+        }
+
+        return listResult;
+    }
 
     /**
      * 方法说明:根据传入参数，查询hive数仓，
@@ -102,69 +163,38 @@ public class HiveQuery implements HiveQueryService {
     public Map<String, String> queryDataToExcel(Map<String, String> map) {
 
         Map resultMap = new HashMap();
-        boolean flag = true;
+        List<String> list = new ArrayList();
         String filePath = null;
-        ResultSet resultSet = null;
-        List<Map> list = new ArrayList();
-        Map<String, String> rowMap;
-        List<String> topList = new ArrayList();
+
         //获取文件路径
         if (map.get("filePath") != null) {
             filePath = map.get("filePath");
-        }else{
+        } else {
             filePath = "F:\\test_excel_write\\easylife_order导出_20200825.xlsx";
         }
 
-        //获取hive连接
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = HiveJDBCUtil.getConn();
-            statement = HiveJDBCUtil.getStmt(connection);
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+        List<JSONObject> queryResult = getQueryResult(map);
+        JSONObject obj = queryResult.get(0);
+        int columnCount = obj.size();
+        //将表头按顺序存入list中
+        for (int i = 1; i <= columnCount; i++) {
+            String columnName = obj.getString(Integer.toString(i));
+            list.add(columnName);
         }
+        //删除表头
+        queryResult.remove(0);
 
-        //校验传入参数,获取可执行SQL
-        String sql = parameterParsing(map);
+        //将数据写出到excel
+        WriteExcelUtil.writeExcel(queryResult, columnCount, filePath, list);
+        resultMap.put("executionStatus", ExecutionStatusEnum.SUCCESS.getMsg());
 
-        //执行sql操作
-        try {
-            //执行查询，获取结果集
-            resultSet = statement.executeQuery(sql);
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            while (resultSet.next()) {
-                rowMap = new HashMap();
-                for (int i = 1; i <= columnCount; i++) {
-                    Object object = resultSet.getObject(i);
-                    String value = null;
-                    if (object != null) {
-                        value = object.toString();
-                    }
-                    String columnName = metaData.getColumnName(i);
-                    rowMap.put(columnName, value);
-                    if (flag) {
-                        topList.add(columnName);
-                    }
-                }
-                //添加一行数据
-                list.add(rowMap);
-                flag = false;
-            }
-
-            //将数据写出到excel
-            WriteExcelUtil.writeExcel(list, columnCount, filePath, topList);
-            resultMap.put("executionStatus", ExecutionStatusEnum.SUCCESS.getMsg());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         //返回结果
         return resultMap;
     }
 
     /**
      * 方法说明:此方法实现查询数据并发送邮件
+     *
      * @param map
      * @return
      */
@@ -247,6 +277,7 @@ public class HiveQuery implements HiveQueryService {
 
         return returnMap;
     }
+
 
     /**
      * 方法说明:传入查询sql及连接，返回hive查询结果

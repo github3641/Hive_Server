@@ -1,5 +1,6 @@
 package org.example.dc.srv.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,10 +26,11 @@ public class WriteExcelUtil {
     private static final String EXCEL_XLS = "xls";
     private static final String EXCEL_XLSX = "xlsx";
 
-    public static void writeExcel(List<Map> dataList, int cloumnCount, String finalXlsxPath, List<String> topList) {
+    public static void writeExcel(List<JSONObject> dataList, int cloumnCount, String finalXlsxPath, List<String> topList) {
         OutputStream fos = null;
         Workbook workBook = null;
         Sheet sheet = null;
+        int lineNum = 0;
         try {
             // 获取总列数
             int columnNumCount = cloumnCount;
@@ -42,7 +44,7 @@ public class WriteExcelUtil {
                 sheet = workBook.getSheetAt(0);
                 //删除原有数据，除了属性列
                 int rowNumber = sheet.getLastRowNum();    // 第一行从0开始算
-                System.out.println("原始数据总行数，除属性列：" + rowNumber);
+                System.out.println("清空数据总行数，除属性列：" + rowNumber);
                 for (int i = 1; i <= rowNumber; i++) {
                     Row row = sheet.getRow(i);
                     sheet.removeRow(row);
@@ -51,7 +53,7 @@ public class WriteExcelUtil {
                 fos = new FileOutputStream(finalXlsxPath);
                 workBook.write(fos);
                 fos.close();
-            } else if(!finalXlsxFile.exists()){
+            } else if (!finalXlsxFile.exists()) {
                 //导出文件不存在时，新建Excel文件
                 workBook = new XSSFWorkbook();
                 sheet = workBook.createSheet();
@@ -67,10 +69,7 @@ public class WriteExcelUtil {
 
             for (int i = 0; i < dataList.size(); i++) {
 
-                Map<String, String> dataMap = dataList.get(i);
-                for (String keyStr : dataMap.keySet()) {
-                    listKey.add(keyStr);
-                }
+                JSONObject dataMap = dataList.get(i);
                 if (i == 0) {
                     //插入表头
                     Row row0 = sheet.createRow(i);
@@ -87,11 +86,11 @@ public class WriteExcelUtil {
                 for (int j = 0; j < columnNumCount; j++) {
                     // 在一行内循环
                     Cell first = row.createCell(j);
-                    first.setCellValue(dataMap.get(topList.get(j)));
-
+                    first.setCellValue(dataMap.getString(topList.get(j)));
                 }
-                listKey.clear();
             }
+            lineNum = dataList.size();
+            System.out.println("写入数据总行数，除属性列 " + lineNum);
             // 创建文件输出流，准备输出电子表格：这个必须有，否则你在sheet上做的任何操作都不会有效
             workBook.write(fos);
             workBook.close();
