@@ -24,7 +24,7 @@ import java.util.*;
  * Author: RuiChao Lv
  * Date: 2020/8/18
  * Version: 1.0
- * Description:
+ * Description:接口实现类
  */
 @Service
 public class HiveQuery implements HiveQueryService {
@@ -100,7 +100,7 @@ public class HiveQuery implements HiveQueryService {
 
         Map<String, String> result = new HashMap();
         //创建写入文件的流
-        String pathName = "D:\\WorkSpace\\Hive_Server\\dc_srv\\src\\main\\resources\\test.txt";
+        String pathName = "dc_srv/src/main/resources/test.txt";
         File file = new File(pathName);
         FileWriter fw = new FileWriter(file);
         BufferedWriter bw = new BufferedWriter(fw);
@@ -109,7 +109,7 @@ public class HiveQuery implements HiveQueryService {
         result.put("filePath", file.getAbsolutePath());
         result.put("executionStatus", ExecutionStatusEnum.FAILED.getMsg());
 
-        //校验传入参数
+        /*//校验传入参数
         String sql = parameterParsing(map);
 
         //创建连接
@@ -123,12 +123,13 @@ public class HiveQuery implements HiveQueryService {
         }
 
         //获得查询结果
-        ResultSet resultSet = getResultSet(stmt, sql);
+        ResultSet resultSet = getResultSet(stmt, sql);*/
 
-
+        List<JSONObject> queryResult = getQueryResult(map);
+        queryResult.remove(0);
         //将结果数据转成json保存到文件
         try {
-            ResultSetMetaData meta = resultSet.getMetaData();
+/*            ResultSetMetaData meta = resultSet.getMetaData();
             while (resultSet.next()) {
                 JSONObject obj = new JSONObject();
                 for (int i = 1; i <= meta.getColumnCount(); i++) {
@@ -137,13 +138,19 @@ public class HiveQuery implements HiveQueryService {
                 String str = obj.toString();
                 bw.write(str);
                 bw.newLine();
+            }*/
+
+            for (JSONObject data:queryResult){
+                String dataStr = data.toString();
+                bw.write(dataStr);
+                bw.newLine();
             }
 
             result.put("executionStatus", ExecutionStatusEnum.SUCCESS.getMsg());
         } catch (Exception e) {
             throw new RuntimeException("写入文件失败!");
         } finally {
-            conn.close();
+//            conn.close();
             bw.close();
         }
 
