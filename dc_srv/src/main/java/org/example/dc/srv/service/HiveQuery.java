@@ -1,26 +1,17 @@
 package org.example.dc.srv.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-import com.sun.tools.corba.se.idl.StringGen;
+import org.apache.commons.mail.EmailException;
 import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.enums.ExecutionStatusEnum;
-import org.example.dc.srv.utils.ComposeSqlUtil;
-import org.example.dc.srv.utils.HiveJDBCUtil;
-import org.example.dc.srv.utils.WriteExcelUtil;
+import org.example.dc.srv.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Project: Hive_Server
@@ -179,15 +170,82 @@ public class HiveQuery implements HiveQueryService {
      */
     @Override
     public Map<String, String> queryDataSendMail(Map<String, String> map) {
+        HashMap<String, String> returnMap = new HashMap<>();
+        returnMap.put("status",ExecutionStatusEnum.FAILED.getMsg());
+        String address = map.get("address");
+        if (address==null){
+            address="779235932@qq.com";
+        }
+        String subject = map.get("subject");
+        if (subject==null){
+            subject="无主题";
+        }
+        //执行查询，并返回文件地址
+        Map<String, String> resultMap=null;
         try {
-            Map<String, String> resultMap = queryDataToJson(map);
+            resultMap = queryDataToJson(map);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        StringBuffer msg= null;
+        try {
+            String filePath = resultMap.get("filePath");
+            FileReader fileReader = new FileReader(new File(filePath));
+            BufferedReader  bufferedReader = new BufferedReader(fileReader);
+
+            //获得邮件内容
+            msg = new StringBuffer();
+            msg.append("<html>\n<body>\n" );
+            msg.append("<table border=1>\n");
+            JSONObject data=null;
+            int i=1;
+            String line;
+            while ((line=bufferedReader.readLine())!=null){
+                data=JSONObject.parseObject(line);
+                if(i==1){
+                    //表头
+                    Set<String> keys = data.keySet();
+                    msg.append("<tr>\n");
+                    for(String key:keys){
+                        msg.append("<td><b>"+key+"</b></td>");
+                    }
+                    msg.append("\n<tr/>\n");
+                    //第一条数据
+                    msg.append("<tr>\n");
+                    for (String key:keys){
+                        msg.append("<td>"+data.get(key)+"</td>");
+                    }
+                    msg.append("\n<tr/>\n");
+
+                }else{
+                    Set<String> keys = data.keySet();
+                    msg.append("<tr>\n");
+                    for (String key:keys){
+                        msg.append("<td>"+data.get(key)+"</td>");
+                    }
+                    msg.append("\n<tr/>\n");
+
+                }
+
+                i++;
+            }
+            msg.append("</table>\n" );
+            msg.append("</body>\n</html>");
+        } catch (IOException e) {
+            throw new RuntimeException("数据转换失败:json→html");
+        }
+        String msgStr = msg.toString();
+        try {
+            SendEmailUtil.sendMail(address,subject,msgStr);
+            returnMap.put("status",ExecutionStatusEnum.SUCCESS.getMsg());
+        } catch (EmailException e) {
+            throw new RuntimeException("邮件发送失败!");
+        }
+
+        return returnMap;
     }
 
     /**

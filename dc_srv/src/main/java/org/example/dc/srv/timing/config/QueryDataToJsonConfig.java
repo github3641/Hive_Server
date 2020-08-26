@@ -39,7 +39,7 @@ public class QueryDataToJsonConfig {
         CronTriggerFactoryBean factory = new CronTriggerFactoryBean();
         factory.setJobDetail(jobDetailFactoryBean.getObject());
         //设置触发时间
-        factory.setCronExpression("0 */1 * * * ?");//秒 分 时 日 月 周 年
+        factory.setCronExpression("0 */10 * * * ?");//秒 分 时 日 月 周 年
         return factory;
     }
 
