@@ -123,6 +123,7 @@ public class HiveQuery implements HiveQueryService {
         }
 
         //获得查询结果
+<<<<<<< HEAD
         ResultSet resultSet = getResultSet(stmt, sql);*/
 
         List<JSONObject> queryResult = getQueryResult(map);
@@ -193,6 +194,7 @@ public class HiveQuery implements HiveQueryService {
 
         //将数据写出到excel
         WriteExcelUtil.writeExcel(queryResult, columnCount, filePath, list);
+        resultMap.put("filePath",filePath);
         resultMap.put("executionStatus", ExecutionStatusEnum.SUCCESS.getMsg());
 
         //返回结果
