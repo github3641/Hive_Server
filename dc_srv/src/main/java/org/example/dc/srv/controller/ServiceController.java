@@ -25,9 +25,9 @@ import java.util.Set;
 public class ServiceController {
     @Autowired
     private HiveQuery hiveQuery;
-    @RequestMapping(value="/queryTest")
-    public Map queryTest(HttpServletRequest request){
-        HashMap<String, String> parameterMap = getParameterMap(request);
+    @RequestMapping(value="/queryToJson")
+    public Map queryToJson(HttpServletRequest request){
+        Map<String, String> parameterMap = getParameterMap(request);
         Map<String, String> resultMap=null;
         try {
              resultMap = hiveQuery.queryDataToJson(parameterMap);
@@ -43,17 +43,26 @@ public class ServiceController {
 
     @RequestMapping(value="/queryToExcel")
     public Map queryToExcel(HttpServletRequest request2){
-        HashMap<String, String> parameterMap2 = getParameterMap(request2);
+        Map<String, String> parameterMap2 = getParameterMap(request2);
         HiveQuery hiveQuery = new HiveQuery();
         Map<String, String> resultMap=null;
         resultMap = hiveQuery.queryDataToExcel(parameterMap2);
         return resultMap;
     }
+    @RequestMapping(value="/queryAndSendMail")
+    public Map queryAndSendMail(HttpServletRequest request){
+        Map<String, String> parameterMap = getParameterMap(request);
+        Map<String, String> resultMap = hiveQuery.queryDataSendMail(parameterMap);
+        return resultMap;
+    }
 
-    private HashMap<String, String> getParameterMap(HttpServletRequest request) {
+
+
+
+    private Map<String, String> getParameterMap(HttpServletRequest request) {
         Map<String, String[]> parameterMap = request.getParameterMap();
         Set<String> keys = parameterMap.keySet();
-        HashMap<String,String> parameterMap2 = new HashMap();
+        Map<String,String> parameterMap2 = new HashMap();
         for (String key:keys){
             String[] value = parameterMap.get(key);
             parameterMap2.put(key,value[0]);
