@@ -10,6 +10,7 @@ import org.example.dc.srv.utils.HiveJDBCUtil;
 import org.example.dc.srv.utils.WriteExcelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,6 +31,7 @@ import java.util.Map;
  * Version: 1.0
  * Description:
  */
+@Service
 public class HiveQuery implements HiveQueryService {
     private static final Logger logger = LoggerFactory.getLogger(HiveQuery.class);
 

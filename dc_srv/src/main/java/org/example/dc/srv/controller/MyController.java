@@ -1,6 +1,7 @@
 package org.example.dc.srv.controller;
 
 import org.example.dc.srv.service.HiveQuery;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,16 +23,19 @@ import java.util.Set;
  */
 @RestController
 public class MyController {
+    @Autowired
+    private HiveQuery hiveQuery;
     @RequestMapping(value="/queryTest")
     public Map queryTest(HttpServletRequest request){
         HashMap<String, String> parameterMap = getParameterMap(request);
-        HiveQuery hiveQuery = new HiveQuery();
         Map<String, String> resultMap=null;
         try {
              resultMap = hiveQuery.qureyDataToJson(parameterMap);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e){
             e.printStackTrace();
         }
         return resultMap;
