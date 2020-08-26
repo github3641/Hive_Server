@@ -16,13 +16,12 @@ import java.util.Map;
 public interface HiveQueryService {
 
 
-
-    Map<String,String> qureyDataToJson(Map<String,String> map) throws SQLException, IOException;
-
+    Map<String,String> queryDataToJson(Map<String,String> map) throws SQLException, IOException;
 
 
+    Map<String,String> queryDataToExcel(Map<String,String> map) throws SQLException;
 
 
-    Map<String,String> qureyDataToExcel(Map<String,String> map) throws SQLException;
+    Map<String,String> queryDataSendMail(Map<String,String> map);
 
 }

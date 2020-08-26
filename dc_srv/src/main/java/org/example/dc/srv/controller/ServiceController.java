@@ -22,7 +22,7 @@ import java.util.Set;
  * Description:
  */
 @RestController
-public class MyController {
+public class ServiceController {
     @Autowired
     private HiveQuery hiveQuery;
     @RequestMapping(value="/queryTest")
@@ -30,7 +30,7 @@ public class MyController {
         HashMap<String, String> parameterMap = getParameterMap(request);
         Map<String, String> resultMap=null;
         try {
-             resultMap = hiveQuery.qureyDataToJson(parameterMap);
+             resultMap = hiveQuery.queryDataToJson(parameterMap);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -46,7 +46,7 @@ public class MyController {
         HashMap<String, String> parameterMap2 = getParameterMap(request2);
         HiveQuery hiveQuery = new HiveQuery();
         Map<String, String> resultMap=null;
-        resultMap = hiveQuery.qureyDataToExcel(parameterMap2);
+        resultMap = hiveQuery.queryDataToExcel(parameterMap2);
         return resultMap;
     }
 

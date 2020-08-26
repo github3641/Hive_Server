@@ -44,7 +44,7 @@ public class HiveQuery implements HiveQueryService {
      * @return
      */
     @Override
-    public Map<String, String> qureyDataToJson(Map<String, String> map) throws SQLException, IOException {
+    public Map<String, String> queryDataToJson(Map<String, String> map) throws SQLException, IOException {
 
         Map<String, String> result = new HashMap();
         //创建写入文件的流
@@ -108,7 +108,7 @@ public class HiveQuery implements HiveQueryService {
      * @return
      */
     @Override
-    public Map<String, String> qureyDataToExcel(Map<String, String> map) {
+    public Map<String, String> queryDataToExcel(Map<String, String> map) {
 
         Map resultMap = new HashMap();
         boolean flag = true;
@@ -170,6 +170,24 @@ public class HiveQuery implements HiveQueryService {
         }
         //返回结果
         return resultMap;
+    }
+
+    /**
+     * 方法说明:此方法实现查询数据并发送邮件
+     * @param map
+     * @return
+     */
+    @Override
+    public Map<String, String> queryDataSendMail(Map<String, String> map) {
+        try {
+            Map<String, String> resultMap = queryDataToJson(map);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /**

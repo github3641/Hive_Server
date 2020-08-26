@@ -1,9 +1,13 @@
-package org.example.dc.srv.test;
+package org.example.dc.srv.timing.job;
 
 import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.service.HiveQuery;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -11,16 +15,17 @@ import java.util.Map;
 
 /**
  * Project: Hive_Server
- * Package: org.example.dc.srv.test
- * Class: HiveQueryTest
+ * Package: org.example.dc.srv.job
+ * Class: QueryDataToJsonJob
  * Author: RuiChao Lv
- * Date: 2020/8/18
+ * Date: 2020/8/26
  * Version: 1.0
  * Description:
  */
-public class HiveQueryTest {
-    public static void main(String args[])throws Exception{
-        Logger logger = LoggerFactory.getLogger(HiveQueryTest.class);
+public class QueryDataToJsonJob implements Job {
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        Logger logger = LoggerFactory.getLogger(QueryDataToJsonJob.class);
         HashMap<String, String> parameter = new HashMap();
         parameter.put("queryMode","customQuery");
         String sql="select * from easylife_app.app_easylife_order_should_sum_day where cal_day = '2020-08-17' limit 2";
