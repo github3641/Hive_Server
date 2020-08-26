@@ -131,7 +131,6 @@ public class HiveQuery implements HiveQueryService {
         //获得查询结果
         ResultSet resultSet = getResultSet(stmt, sql);
 
-
         //将结果数据转成json保存到文件
         try {
             ResultSetMetaData meta = resultSet.getMetaData();
@@ -192,6 +191,7 @@ public class HiveQuery implements HiveQueryService {
 
         //将数据写出到excel
         WriteExcelUtil.writeExcel(queryResult, columnCount, filePath, list);
+        resultMap.put("filePath",filePath);
         resultMap.put("executionStatus", ExecutionStatusEnum.SUCCESS.getMsg());
 
         //返回结果
