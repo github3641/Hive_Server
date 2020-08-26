@@ -1,8 +1,9 @@
-package org.example.dc.start;
+package org.example.dc.srv;
 
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Project: Hive_Service
@@ -15,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 
 @SpringBootApplication
+@EnableScheduling
 public class Application {
     public static void main(String args[]){
         SpringApplication.run(Application.class);

@@ -1,6 +1,7 @@
-package org.example.dc.start.controller;
+package org.example.dc.srv.controller;
 
 import org.example.dc.srv.service.HiveQuery;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +14,7 @@ import java.util.Set;
 
 /**
  * Project: Hive_Service
- * Package: org.example.dc.start.controller
+ * Package: org.example.dc.srv.controller
  * Class: MyController
  * Author: RuiChao Lv
  * Date: 2020/8/24
@@ -21,17 +22,20 @@ import java.util.Set;
  * Description:
  */
 @RestController
-public class MyController {
+public class ServiceController {
+    @Autowired
+    private HiveQuery hiveQuery;
     @RequestMapping(value="/queryTest")
     public Map queryTest(HttpServletRequest request){
         HashMap<String, String> parameterMap = getParameterMap(request);
-        HiveQuery hiveQuery = new HiveQuery();
         Map<String, String> resultMap=null;
         try {
-             resultMap = hiveQuery.qureyDataToJson(parameterMap);
+             resultMap = hiveQuery.queryDataToJson(parameterMap);
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e){
             e.printStackTrace();
         }
         return resultMap;
@@ -42,7 +46,7 @@ public class MyController {
         HashMap<String, String> parameterMap2 = getParameterMap(request2);
         HiveQuery hiveQuery = new HiveQuery();
         Map<String, String> resultMap=null;
-        resultMap = hiveQuery.qureyDataToExcel(parameterMap2);
+        resultMap = hiveQuery.queryDataToExcel(parameterMap2);
         return resultMap;
     }
 

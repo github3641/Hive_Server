@@ -36,7 +36,7 @@ public class HiveToExcelTest {
         HiveQueryService hq = new HiveQuery();
 
         try {
-            Map<String, String> stringStringMap = hq.qureyDataToExcel(parameter);
+            Map<String, String> stringStringMap = hq.queryDataToExcel(parameter);
         } catch (SQLException e) {
             e.printStackTrace();
         }
