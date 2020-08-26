@@ -6,6 +6,7 @@ import com.sun.tools.corba.se.idl.StringGen;
 import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.enums.ExecutionStatusEnum;
 import org.example.dc.srv.utils.ComposeSqlUtil;
+import org.example.dc.srv.utils.HiveDataSourceUtil;
 import org.example.dc.srv.utils.HiveJDBCUtil;
 import org.example.dc.srv.utils.WriteExcelUtil;
 import org.slf4j.Logger;
@@ -126,9 +127,9 @@ public class HiveQuery implements HiveQueryService {
         Connection connection = null;
         Statement statement = null;
         try {
-            connection = HiveJDBCUtil.getConn();
-            statement = HiveJDBCUtil.getStmt(connection);
-        } catch (ClassNotFoundException | SQLException e) {
+            connection = HiveDataSourceUtil.getHiveConn();
+            statement = connection.createStatement();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -165,6 +166,9 @@ public class HiveQuery implements HiveQueryService {
             resultMap.put("executionStatus", ExecutionStatusEnum.SUCCESS.getMsg());
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            HiveDataSourceUtil.closeConn();
+            HiveDataSourceUtil.closeHiveDataSource();
         }
         //返回结果
         return resultMap;

@@ -1,0 +1,13 @@
+hive_jdbc_pool:
+  hive_jdbc_url: jdbc:hive2://10.2.39.67:10000
+  hive.dbname: xxxxx
+  hive_jdbc_username: hive
+  hive_jdbc_password: hopson
+
+    #配置初始化大小、最小、最大
+  hive_initialSize: 20
+  hive_minIdle: 20
+  hive_maxActive: 500
+
+    #配置获取连接等待超时的时间
+  hive_maxWait: 60000
