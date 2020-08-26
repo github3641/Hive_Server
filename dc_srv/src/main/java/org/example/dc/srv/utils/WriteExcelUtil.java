@@ -29,6 +29,7 @@ public class WriteExcelUtil {
         OutputStream fos = null;
         Workbook workBook = null;
         Sheet sheet = null;
+        int lineNum = 0;
         try {
             // 获取总列数
             int columnNumCount = cloumnCount;
@@ -42,7 +43,7 @@ public class WriteExcelUtil {
                 sheet = workBook.getSheetAt(0);
                 //删除原有数据，除了属性列
                 int rowNumber = sheet.getLastRowNum();    // 第一行从0开始算
-                System.out.println("原始数据总行数，除属性列：" + rowNumber);
+                System.out.println("清空数据总行数，除属性列：" + rowNumber);
                 for (int i = 1; i <= rowNumber; i++) {
                     Row row = sheet.getRow(i);
                     sheet.removeRow(row);
@@ -88,10 +89,11 @@ public class WriteExcelUtil {
                     // 在一行内循环
                     Cell first = row.createCell(j);
                     first.setCellValue(dataMap.get(topList.get(j)));
-
                 }
                 listKey.clear();
             }
+            lineNum = dataList.size();
+            System.out.println("写入数据总行数，除属性列 "+lineNum);
             // 创建文件输出流，准备输出电子表格：这个必须有，否则你在sheet上做的任何操作都不会有效
             workBook.write(fos);
             workBook.close();

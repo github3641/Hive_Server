@@ -8,6 +8,16 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Project: Hive_Server
+ * Package: org.example.dc.srv.utils
+ * Class: YamlUtils
+ * Author: Peng Sun
+ * Date: 2020/8/26
+ * Version: 1.0
+ * Description:
+ */
 public class YamlUtils {
 
     /**
@@ -74,26 +84,6 @@ public class YamlUtils {
             return null;
         }
         return result.get(key);
-    }
-
-
-    public static Map<String, String> loadYamlStr(String str) {
-        Map<String, String> result = new HashMap<String, String>();
-        if (StringUtils.isEmpty(str)) {
-            return result;
-        }
-        Yaml yaml = new Yaml();
-        Map<String, Object> params = yaml.loadAs(str, Map.class);
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            if (entry.getValue() instanceof Map) {
-                eachYaml(entry.getKey(), (Map<String, Object>) entry.getValue(), result);
-            } else {
-                if (entry.getValue() != null) {
-                    result.put(entry.getKey(), entry.getValue().toString());
-                }
-            }
-        }
-        return result;
     }
 
 }
