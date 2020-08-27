@@ -1,6 +1,9 @@
 package org.example.dc.srv.utils;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 
 /**
@@ -13,6 +16,8 @@ import java.util.Map;
  * Description:根据传入的参数合成可执行SQL
  */
 public class ComposeSqlUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(ComposeSqlUtil.class);
 
     public static final String COLUMNS="columns";
     public static final String PARTCOLUMN="partcolumn";
@@ -63,6 +68,7 @@ public class ComposeSqlUtil {
             }
         }
 
+        logger.info("ComposeSqlUtil组合后sql为："+sql);
 
         return sql;
     }

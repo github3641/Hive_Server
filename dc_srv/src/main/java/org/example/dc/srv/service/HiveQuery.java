@@ -214,7 +214,6 @@ public class HiveQuery implements HiveQueryService {
     public List<JSONObject> queryTableSize() {
 
         String sql = null;
-
         //定义所用变量
         Map<String, String> map = new HashMap();
         List<JSONObject> list = new ArrayList();
@@ -254,10 +253,11 @@ public class HiveQuery implements HiveQueryService {
             obj.put("数据量", count);
             //添加一行数据
             list.add(obj);
+            System.out.println(table+"表数据量查询完成，数据量为"+count);
         }
         //将数据写出到excel
         WriteExcelUtil.writeExcel(list, 2, filePath, topList);
-        System.out.println("多表数据量统计写入Excel成功");
+        logger.info("多表数据量统计写入Excel成功");
         return list;
     }
 

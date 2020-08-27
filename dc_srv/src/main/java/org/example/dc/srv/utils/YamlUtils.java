@@ -1,6 +1,9 @@
 package org.example.dc.srv.utils;
 
 import org.apache.commons.lang.StringUtils;
+import org.example.dc.srv.service.HiveQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -20,6 +23,7 @@ import java.util.Map;
  */
 public class YamlUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(YamlUtils.class);
     /**
      * 以指定class为定位,获取制定文件名的配置文件,并读取
      *
@@ -33,7 +37,7 @@ public class YamlUtils {
                 throw new RuntimeException("必须指定一个配置文件!");
             }
 
-            System.out.println("加载配置文件:" + fileName);
+            logger.info("加载配置文件:" + fileName);
             Yaml yaml = new Yaml();
             InputStream is = new FileInputStream(fileName);
             Map<String, Object> params = yaml.loadAs(is, Map.class);

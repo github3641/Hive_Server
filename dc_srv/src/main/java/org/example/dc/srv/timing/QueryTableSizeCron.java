@@ -20,15 +20,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class QueryTableSizeCron{
 
+    private static final Logger logger = LoggerFactory.getLogger(QueryTableSizeCron.class);
+
     @Scheduled(cron = "0 42 15 * * ?")
     public void queryTableSize(){
-        Logger logger = LoggerFactory.getLogger(QueryTableSizeCron.class);
         HiveQueryService hiveQuery = new HiveQuery();
         try {
             hiveQuery.queryTableSize();
         } catch (Exception e){
             logger.error("错误信息:"+e);
         }
-        System.out.println("QueryDataToExcelJob执行成功");
+        logger.info("QueryDataToExcelJob执行成功");
     }
 }
