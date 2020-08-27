@@ -1,9 +1,6 @@
 package org.example.dc.srv.api;
 
 import com.alibaba.fastjson.JSONObject;
-
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,15 +16,15 @@ import java.util.Map;
 public interface HiveQueryService {
 
 
-    Map<String,String> queryDataToJson(Map<String,String> map) throws SQLException, IOException;
+    Map<String,String> queryDataToJson(Map<String,String> map) throws Exception;
 
 
-    Map<String,String> queryDataToExcel(Map<String,String> map) throws SQLException;
+    Map<String,String> queryDataToExcel(Map<String,String> map) throws Exception;
 
 
-    Map<String,String> queryDataSendMail(Map<String,String> map);
+    Map<String,String> queryDataSendMail(Map<String,String> map) throws Exception;
 
 
-    List<JSONObject> getQueryResult(Map<String,String> map) throws SQLException;
+    List<JSONObject> getQueryResult(Map<String,String> map) throws Exception;
 
 }
