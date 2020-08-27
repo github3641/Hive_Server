@@ -126,7 +126,6 @@ public class HiveQuery implements HiveQueryService {
         }
 
         //获得查询结果
-<<<<<<< HEAD
         ResultSet resultSet = getResultSet(stmt, sql);*/
 
         List<JSONObject> queryResult = getQueryResult(map);
@@ -177,11 +176,13 @@ public class HiveQuery implements HiveQueryService {
         List<String> list = new ArrayList();
         String filePath = null;
 
+        String today = GetDateUtil.getToday();
+
         //获取文件路径
         if (map.get("filePath") != null) {
             filePath = map.get("filePath");
         } else {
-            filePath = "F:\\test_excel_write\\easylife_order导出_20200825.xlsx";
+            filePath = "dc_srv/src/main/resources/export/easylife_dw导出_"+today+".xlsx";
         }
 
         List<JSONObject> queryResult = getQueryResult(map);
