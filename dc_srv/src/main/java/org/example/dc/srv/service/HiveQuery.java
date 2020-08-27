@@ -2,6 +2,7 @@ package org.example.dc.srv.service;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.mail.EmailException;
+import org.apache.hadoop.fs.PathNotFoundException;
 import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.enums.ExecutionStatusEnum;
 import org.example.dc.srv.utils.*;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -63,6 +65,7 @@ public class HiveQuery implements HiveQueryService {
                         String columnName = metaData.getColumnName(i);
                         topLine.put(Integer.toString(i), columnName);
                     }
+
                     listResult.add(topLine);
                     flag = false;
                 }
@@ -96,63 +99,52 @@ public class HiveQuery implements HiveQueryService {
      * @return
      */
     @Override
-    public Map<String, String> queryDataToJson(Map<String, String> map) throws SQLException, IOException {
+    public Map<String, String> queryDataToJson(Map<String, String> map){
 
         Map<String, String> result = new HashMap();
         //创建写入文件的流
-        String pathName = "dc_srv/src/main/resources/test.txt";
+        String fileName=LocalDate.now()+"_queryDataToJson_"+RandomNumberUtil.getRandomNumber(4)+".txt";
+        String pathName = "tmp/";
         File file = new File(pathName);
-        FileWriter fw = new FileWriter(file);
-        BufferedWriter bw = new BufferedWriter(fw);
-
-        //初始化结果集
-        result.put("filePath", file.getAbsolutePath());
-        result.put("executionStatus", ExecutionStatusEnum.FAILED.getMsg());
-
-        /*//校验传入参数
-        String sql = parameterParsing(map);
-
-        //创建连接
-        Connection conn = null;
-        Statement stmt = null;
+        if (!file.exists()){
+            file.mkdir();
+        }
+        BufferedWriter bw = null;
         try {
-            conn = HiveJDBCUtil.getConn();
-            stmt = HiveJDBCUtil.getStmt(conn);
-        } catch (Exception e) {
-            throw new RuntimeException("获取连接失败!");
+            bw = new BufferedWriter(new FileWriter(new File(pathName+fileName)));
+        } catch (IOException e) {
+            logger.error("输出流创建失败:"+e.getMessage());
+        }catch (Exception e){
+            logger.error("输出流创建失败:"+e.getMessage());
         }
 
-        //获得查询结果
-<<<<<<< HEAD
-        ResultSet resultSet = getResultSet(stmt, sql);*/
+        //初始化结果集
+        result.put("filePath",pathName+fileName);
+        result.put("executionStatus", ExecutionStatusEnum.FAILED.getMsg());
 
-        List<JSONObject> queryResult = getQueryResult(map);
-        queryResult.remove(0);
-        //将结果数据转成json保存到文件
         try {
-/*            ResultSetMetaData meta = resultSet.getMetaData();
-            while (resultSet.next()) {
-                JSONObject obj = new JSONObject();
-                for (int i = 1; i <= meta.getColumnCount(); i++) {
-                    obj.put(meta.getColumnName(i), resultSet.getObject(i));
-                }
-                String str = obj.toString();
-                bw.write(str);
-                bw.newLine();
-            }*/
-
+            //获得查询结果
+            List<JSONObject> queryResult = getQueryResult(map);
+            if (queryResult!=null){
+            queryResult.remove(0);
+            //将结果数据转成json保存到文件
+            logger.info("开始写入文件:"+pathName+fileName);
             for (JSONObject data:queryResult){
                 String dataStr = data.toString();
                 bw.write(dataStr);
                 bw.newLine();
             }
-
+            logger.info("写入文件结束");
+            }
             result.put("executionStatus", ExecutionStatusEnum.SUCCESS.getMsg());
         } catch (Exception e) {
-            throw new RuntimeException("写入文件失败!");
+            logger.error("写入文件失败:"+e.getMessage());
         } finally {
-//            conn.close();
-            bw.close();
+            try {
+                bw.close();
+            } catch (IOException e) {
+                logger.error("流关闭失败:"+e.getMessage());
+            }
         }
 
         //返回结果
@@ -210,30 +202,28 @@ public class HiveQuery implements HiveQueryService {
     @Override
     public Map<String, String> queryDataSendMail(Map<String, String> map) {
         HashMap<String, String> returnMap = new HashMap<>();
-        returnMap.put("status",ExecutionStatusEnum.FAILED.getMsg());
-        String address = map.get("address");
+        returnMap.put("executionStatus",ExecutionStatusEnum.FAILED.getMsg());
+        logger.info("开始发送邮件");
+        //读取配置文件
+        //读取配置文件信息
+        String YamlfilePath="dc_srv/src/main/resources/app.yml";
+        Map<String, String> mailParameter = YamlUtils.getYamlByFileName(YamlfilePath);
+        String addressTo = mailParameter.get("sendMail.addressTo");
+        String setSubject = mailParameter.get("sendMail.setSubject");
+        String address = map.get("addressTo");
         if (address==null){
-            address="779235932@qq.com";
+            address=addressTo;
         }
         String subject = map.get("subject");
         if (subject==null){
-            subject="无主题";
+            subject=setSubject;
         }
         //执行查询，并返回文件地址
-        Map<String, String> resultMap=null;
-        try {
-            resultMap = queryDataToJson(map);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Map<String, String>  resultMap = queryDataToJson(map);
 
         StringBuffer msg= null;
         try {
-            String filePath = resultMap.get("filePath");
-            FileReader fileReader = new FileReader(new File(filePath));
-            BufferedReader  bufferedReader = new BufferedReader(fileReader);
+            BufferedReader  bufferedReader = new BufferedReader(new FileReader(new File(resultMap.get("filePath"))));
 
             //获得邮件内容
             msg = new StringBuffer();
@@ -274,14 +264,17 @@ public class HiveQuery implements HiveQueryService {
             msg.append("</table>\n" );
             msg.append("</body>\n</html>");
         } catch (IOException e) {
-            throw new RuntimeException("数据转换失败:json→html");
+            logger.error("数据转换失败(json→html):"+e.getMessage());
+        }catch (Exception e){
+            logger.error("数据转换失败(json→html):"+e.getMessage());
         }
         String msgStr = msg.toString();
         try {
             SendEmailUtil.sendMail(address,subject,msgStr);
-            returnMap.put("status",ExecutionStatusEnum.SUCCESS.getMsg());
+            logger.info("发送邮件成功");
+            returnMap.put("executionStatus",ExecutionStatusEnum.SUCCESS.getMsg());
         } catch (EmailException e) {
-            throw new RuntimeException("邮件发送失败!");
+           logger.error(e.getMessage());
         }
 
         return returnMap;
@@ -293,7 +286,7 @@ public class HiveQuery implements HiveQueryService {
      *
      * @return
      */
-    public ResultSet getResultSet(Statement stmt, String sql) {
+    public ResultSet getResultSet(Statement stmt, String sql) throws SQLException{
 
         //根据传入sql查询，并写入文件
         ResultSet resultSet = null;
@@ -301,7 +294,8 @@ public class HiveQuery implements HiveQueryService {
             resultSet = stmt.executeQuery(sql);//返回执行结果集
 
         } catch (SQLException e) {
-            throw new RuntimeException("查询数据失败!");
+            logger.error("查询数据失败:"+e.getMessage());
+            throw e;
         }
 
         return resultSet;

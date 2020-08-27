@@ -11,3 +11,17 @@ hive_jdbc_pool:
 
     #配置获取连接等待超时的时间
   hive_maxWait: 60000
+
+sendMail:
+  hostName: smtp.exmail.qq.com #发送服务器的名字
+  SSLOnConnect: true #是否启用SSL
+  smtpPort: 465 #端口
+  charset: UTF-8 #字符编码集
+  addressTo: 779235932@qq.com,lv_ruichao@163.com #收件人地址
+  addressFrom: 190654@lifeat.cn #发件人地址
+  nameFrom: 数据中心 #发件人
+  userName: 190654@lifeat.cn #发件人邮箱登录名
+  passWord: Lrc123 #发件人邮箱登录密码
+  setSubject: 无主题 #需用户传入，默认无主题
+
+

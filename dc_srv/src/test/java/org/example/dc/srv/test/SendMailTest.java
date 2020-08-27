@@ -14,7 +14,7 @@ import org.example.dc.srv.utils.SendEmailUtil;
  */
 public class SendMailTest {
     public static void main(String args[]){
-        String address="779235932@qq.com";
+        String address="779235932@qq.com,lv_ruichao@163.com";
         String subject="测试邮件";
         String msg="<html>\n<body>你能收到吗？\n</body>\n</html>";
         SendEmailUtil sendEmailUtil = new SendEmailUtil();
