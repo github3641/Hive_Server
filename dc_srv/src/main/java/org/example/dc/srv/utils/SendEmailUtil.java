@@ -9,16 +9,21 @@ package org.example.dc.srv.utils;
  * Version: 1.0
  * Description:
  */
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.example.dc.srv.enums.ExecutionStatusEnum;
+import org.example.dc.srv.service.HiveQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SendEmailUtil {
+    private static final Logger logger = LoggerFactory.getLogger(HiveQuery.class);
 
     public static String sendMail(String address, String subject, String msg) throws EmailException {
         //读取配置文件信息
@@ -39,7 +44,7 @@ public class SendEmailUtil {
         if (StringUtils.isEmpty(address) || StringUtils.isEmpty(subject) || StringUtils.isEmpty(msg)) {
             throw new EmailException("传入参数有空项!");
         }
-
+        logger.info("开始发送邮件");
         try {
             HtmlEmail email = new HtmlEmail();
             List<String> list = new ArrayList();
@@ -63,6 +68,7 @@ public class SendEmailUtil {
             email.setMsg(msg);
             //发送
             email.send();
+            logger.info("发送邮件成功");
             status = ExecutionStatusEnum.SUCCESS.getMsg();
             return status;
         } catch (Exception e) {

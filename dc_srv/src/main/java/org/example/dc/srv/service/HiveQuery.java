@@ -129,7 +129,7 @@ public class HiveQuery implements HiveQueryService {
             //获得查询结果
             List<JSONObject> queryResult = getQueryResult(map);
             if (queryResult!=null){
-            queryResult.remove(0);
+//            queryResult.remove(0);
             //将结果数据转成json保存到文件
             logger.info("开始写入文件:"+pathName+fileName);
             for (JSONObject data:queryResult){
@@ -264,7 +264,6 @@ public class HiveQuery implements HiveQueryService {
     public Map<String, String> queryDataSendMail(Map<String, String> map) {
         HashMap<String, String> returnMap = new HashMap<>();
         returnMap.put("executionStatus",ExecutionStatusEnum.FAILED.getMsg());
-        logger.info("开始发送邮件");
         //读取配置文件信息
         String YamlfilePath="dc_srv/src/main/resources/app.yml";
         Map<String, String> mailParameter = YamlUtils.getYamlByFileName(YamlfilePath);
@@ -291,27 +290,25 @@ public class HiveQuery implements HiveQueryService {
             msg.append("<html>\n<body>\n");
             msg.append("<table border=1>\n");
             JSONObject data = null;
+            ArrayList<String> keys = new ArrayList<>();
             int i = 1;
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 data = JSONObject.parseObject(line);
                 if (i == 1) {
                     //表头
-                    Set<String> keys = data.keySet();
+                    int columnCount = data.size();
+                    //将表头按顺序存入list中
+                    for (int j = 1; j <= columnCount; j++) {
+                        String columnName = data.getString(Integer.toString(j));
+                        keys.add(columnName);
+                    }
                     msg.append("<tr>\n");
                     for (String key : keys) {
                         msg.append("<td><b>" + key + "</b></td>");
                     }
                     msg.append("\n<tr/>\n");
-                    //第一条数据
-                    msg.append("<tr>\n");
-                    for (String key : keys) {
-                        msg.append("<td>" + data.get(key) + "</td>");
-                    }
-                    msg.append("\n<tr/>\n");
-
                 } else {
-                    Set<String> keys = data.keySet();
                     msg.append("<tr>\n");
                     for (String key : keys) {
                         msg.append("<td>" + data.get(key) + "</td>");
@@ -332,7 +329,6 @@ public class HiveQuery implements HiveQueryService {
         String msgStr = msg.toString();
         try {
             SendEmailUtil.sendMail(address,subject,msgStr);
-            logger.info("发送邮件成功");
             returnMap.put("executionStatus",ExecutionStatusEnum.SUCCESS.getMsg());
         } catch (EmailException e) {
            logger.error(e.getMessage());
@@ -390,7 +386,7 @@ public class HiveQuery implements HiveQueryService {
         }
 
         if ("customQuery".equals(queryMode) && sql != null) {
-            querySql = sql;
+            querySql =sql;
         } else if ("customQuery".equals(queryMode) && sql == null) {
             throw new RuntimeException("选择自定义查询模式下，请正确传入自定义sql!");
 
