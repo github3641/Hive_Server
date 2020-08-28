@@ -19,6 +19,7 @@ import java.util.Map;
  * Description:
  */
 public class HiveDataSourceUtil {
+
     private static DruidDataSource hiveDataSource = new DruidDataSource();
     public static Connection conn = null;
     public static final String FILE_PATH = "dc_srv/src/main/resources/app.yml";

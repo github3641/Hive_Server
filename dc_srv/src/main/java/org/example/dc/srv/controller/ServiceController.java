@@ -32,20 +32,26 @@ public class ServiceController {
     }
 
     @RequestMapping(value="/queryToExcel")
-    public Map queryToExcel(HttpServletRequest request2){
-        Map<String, String> parameterMap2 = getParameterMap(request2);
+    public Map queryToExcel(HttpServletRequest request_Excel){
+        Map<String, String> paraMap = getParameterMap(request_Excel);
         HiveQuery hiveQuery = new HiveQuery();
         Map<String, String> resultMap=null;
-        resultMap = hiveQuery.queryDataToExcel(parameterMap2);
+        resultMap = hiveQuery.queryDataToExcel(paraMap);
         return resultMap;
     }
+
+    @RequestMapping(value="/queryTableSize")
+    public void queryTableSize(){
+        HiveQuery hiveQuery = new HiveQuery();
+        hiveQuery.queryTableSize();
+    }
+
     @RequestMapping(value="/queryAndSendMail")
     public Map queryAndSendMail(HttpServletRequest request){
         Map<String, String> parameterMap = getParameterMap(request);
         Map<String, String> resultMap = hiveQuery.queryDataSendMail(parameterMap);
         return resultMap;
     }
-
 
     /**
      * 方法说明:url中参数解析

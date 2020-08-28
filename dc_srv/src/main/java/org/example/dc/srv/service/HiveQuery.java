@@ -6,13 +6,10 @@ import org.apache.hadoop.fs.PathNotFoundException;
 import org.example.dc.srv.api.HiveQueryService;
 import org.example.dc.srv.enums.ExecutionStatusEnum;
 import org.example.dc.srv.utils.*;
-import org.example.dc.srv.utils.ComposeSqlUtil;
-import org.example.dc.srv.utils.HiveDataSourceUtil;
-import org.example.dc.srv.utils.HiveJDBCUtil;
-import org.example.dc.srv.utils.WriteExcelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import parquet.it.unimi.dsi.fastutil.Hash;
 
 import java.io.*;
 import java.sql.*;
@@ -31,6 +28,12 @@ import java.util.*;
 @Service
 public class HiveQuery implements HiveQueryService {
     private static final Logger logger = LoggerFactory.getLogger(HiveQuery.class);
+
+    private final String YML_PATH = "dc_srv/src/main/resources/app.yml";
+    private final String hIVE_TABLES = "hive.tables";
+    private final String HIVE_DATABASE = "hive.database";
+    private final String FILE_PATH = "file_path";
+    private final String QUERY_MODE = "queryMode";
 
     /***
      *
@@ -166,11 +169,13 @@ public class HiveQuery implements HiveQueryService {
         List<String> list = new ArrayList();
         String filePath = null;
 
+        String today = GetDateUtil.getToday();
+
         //获取文件路径
         if (map.get("filePath") != null) {
             filePath = map.get("filePath");
         } else {
-            filePath = "F:\\test_excel_write\\easylife_order导出_20200825.xlsx";
+            filePath = "dc_srv/src/main/resources/export/easylife_dw导出_"+today+".xlsx";
         }
 
         List<JSONObject> queryResult = getQueryResult(map);
@@ -186,11 +191,67 @@ public class HiveQuery implements HiveQueryService {
 
         //将数据写出到excel
         WriteExcelUtil.writeExcel(queryResult, columnCount, filePath, list);
-        resultMap.put("filePath",filePath);
+        resultMap.put("filePath", filePath);
         resultMap.put("executionStatus", ExecutionStatusEnum.SUCCESS.getMsg());
 
         //返回结果
         return resultMap;
+    }
+
+    /***
+     * 方法说明：多表数据量统计
+     * 通过配置app.yml文件，
+     * 获取相关参数，
+     * 实现数据量查询并写入Excel中
+     */
+    public List<JSONObject> queryTableSize() {
+
+        String sql = null;
+        //定义所用变量
+        Map<String, String> map = new HashMap();
+        List<JSONObject> list = new ArrayList();
+        List<String> topList = new ArrayList();
+        Map<String, String> argsMap = YamlUtils.getYamlByFileName(YML_PATH);
+        //获取参数值
+        String tables = argsMap.get(hIVE_TABLES);
+        String database = argsMap.get(HIVE_DATABASE);
+        String filePath = argsMap.get(FILE_PATH);
+        String queryMode = argsMap.get(QUERY_MODE);
+
+        //设置查询模式和文件路径
+        map.put(QUERY_MODE, queryMode);
+        map.put(FILE_PATH, filePath);
+        //添加Excel表头
+        topList.add("表名");
+        topList.add("数据量");
+
+        //获取当前日期
+        String yesterday = GetDateUtil.getYesterday();
+
+        //遍历每个表，并查询数据量
+        for (String table : tables.split(",")) {
+            //根据表名合成sql
+            if (table != null && table.matches("^ods.+part_day$")) {
+                sql = "select count(1) as count from " + database + "." + table + " where dw_day='" + yesterday + "'";
+            } else if (table != null) {
+                sql = "select count(1) as count from " + database + "." + table;
+            }
+            map.put("querySql", sql);
+            //传入参数，返回查询结果
+            List<JSONObject> queryTable = getQueryResult(map);
+            JSONObject obj = new JSONObject();
+            //读取并添加表名及数据量
+            String count = queryTable.get(1).getString("count");
+            obj.put("表名", table);
+            obj.put("数据量", count);
+            //添加一行数据
+            list.add(obj);
+            System.out.println(table+"表数据量查询完成，数据量为"+count);
+        }
+        //将数据写出到excel
+        WriteExcelUtil.writeExcel(list, 2, filePath, topList);
+        logger.info("多表数据量统计写入Excel成功");
+        return list;
     }
 
     /**
@@ -204,56 +265,56 @@ public class HiveQuery implements HiveQueryService {
         HashMap<String, String> returnMap = new HashMap<>();
         returnMap.put("executionStatus",ExecutionStatusEnum.FAILED.getMsg());
         logger.info("开始发送邮件");
-        //读取配置文件
         //读取配置文件信息
         String YamlfilePath="dc_srv/src/main/resources/app.yml";
         Map<String, String> mailParameter = YamlUtils.getYamlByFileName(YamlfilePath);
         String addressTo = mailParameter.get("sendMail.addressTo");
-        String setSubject = mailParameter.get("sendMail.setSubject");
+        String defaultSubject = mailParameter.get("sendMail.subject");
         String address = map.get("addressTo");
         if (address==null){
             address=addressTo;
         }
         String subject = map.get("subject");
         if (subject==null){
-            subject=setSubject;
+            subject=defaultSubject;
         }
         //执行查询，并返回文件地址
         Map<String, String>  resultMap = queryDataToJson(map);
 
-        StringBuffer msg= null;
+
+        StringBuffer msg = null;
         try {
             BufferedReader  bufferedReader = new BufferedReader(new FileReader(new File(resultMap.get("filePath"))));
 
             //获得邮件内容
             msg = new StringBuffer();
-            msg.append("<html>\n<body>\n" );
+            msg.append("<html>\n<body>\n");
             msg.append("<table border=1>\n");
-            JSONObject data=null;
-            int i=1;
+            JSONObject data = null;
+            int i = 1;
             String line;
-            while ((line=bufferedReader.readLine())!=null){
-                data=JSONObject.parseObject(line);
-                if(i==1){
+            while ((line = bufferedReader.readLine()) != null) {
+                data = JSONObject.parseObject(line);
+                if (i == 1) {
                     //表头
                     Set<String> keys = data.keySet();
                     msg.append("<tr>\n");
-                    for(String key:keys){
-                        msg.append("<td><b>"+key+"</b></td>");
+                    for (String key : keys) {
+                        msg.append("<td><b>" + key + "</b></td>");
                     }
                     msg.append("\n<tr/>\n");
                     //第一条数据
                     msg.append("<tr>\n");
-                    for (String key:keys){
-                        msg.append("<td>"+data.get(key)+"</td>");
+                    for (String key : keys) {
+                        msg.append("<td>" + data.get(key) + "</td>");
                     }
                     msg.append("\n<tr/>\n");
 
-                }else{
+                } else {
                     Set<String> keys = data.keySet();
                     msg.append("<tr>\n");
-                    for (String key:keys){
-                        msg.append("<td>"+data.get(key)+"</td>");
+                    for (String key : keys) {
+                        msg.append("<td>" + data.get(key) + "</td>");
                     }
                     msg.append("\n<tr/>\n");
 
@@ -261,7 +322,7 @@ public class HiveQuery implements HiveQueryService {
 
                 i++;
             }
-            msg.append("</table>\n" );
+            msg.append("</table>\n");
             msg.append("</body>\n</html>");
         } catch (IOException e) {
             logger.error("数据转换失败(json→html):"+e.getMessage());

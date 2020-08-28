@@ -22,6 +22,9 @@ public interface HiveQueryService {
     Map<String,String> queryDataToExcel(Map<String,String> map) throws Exception;
 
 
+    List<JSONObject> queryTableSize();
+
+
     Map<String,String> queryDataSendMail(Map<String,String> map) throws Exception;
 
 

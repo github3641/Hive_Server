@@ -7,6 +7,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
@@ -25,6 +27,7 @@ public class WriteExcelUtil {
 
     private static final String EXCEL_XLS = "xls";
     private static final String EXCEL_XLSX = "xlsx";
+    private static final Logger logger = LoggerFactory.getLogger(WriteExcelUtil.class);
 
     public static void writeExcel(List<JSONObject> dataList, int cloumnCount, String finalXlsxPath, List<String> topList) {
         OutputStream fos = null;
