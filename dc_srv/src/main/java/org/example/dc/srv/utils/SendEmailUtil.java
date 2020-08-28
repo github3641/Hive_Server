@@ -47,7 +47,7 @@ public class SendEmailUtil {
 
             // 这里是SMTP发送服务器的名字：163的如下："smtp.163.com"
             email.setHostName(hostName);
-            email.setSSLOnConnect(Boolean.getBoolean(SSLOnConnect));
+            email.setSSLOnConnect(Boolean.parseBoolean(SSLOnConnect));
             email.setSmtpPort(Integer.parseInt(smtpPort));
             // 字符编码集的设置
             email.setCharset(charset);
