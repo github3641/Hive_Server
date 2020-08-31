@@ -29,4 +29,3 @@ hive:
 
 file_path: dc_srv/src/main/resources/export/easylife_dw导出_2020-08-27.xlsx
 queryMode: customQuery
-

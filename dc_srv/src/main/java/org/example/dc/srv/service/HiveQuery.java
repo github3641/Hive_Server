@@ -8,6 +8,8 @@ import org.example.dc.srv.enums.ExecutionStatusEnum;
 import org.example.dc.srv.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parquet.it.unimi.dsi.fastutil.Hash;
 
@@ -29,6 +31,8 @@ import java.util.*;
 public class HiveQuery implements HiveQueryService {
     private static final Logger logger = LoggerFactory.getLogger(HiveQuery.class);
 
+    @Autowired
+    private SendEmailUtil sendEmailUtil;
     private final String YML_PATH = "dc_srv/src/main/resources/app.yml";
     private final String hIVE_TABLES = "hive.tables";
     private final String HIVE_DATABASE = "hive.database";
@@ -260,15 +264,19 @@ public class HiveQuery implements HiveQueryService {
      * @param map
      * @return
      */
+
+    //读取配置信息
+    @Value("${sendMail.addressTo}")
+    private String addressTo;
+
+    @Value("${sendMail.subject}")
+    private String defaultSubject;
+
     @Override
     public Map<String, String> queryDataSendMail(Map<String, String> map) {
         HashMap<String, String> returnMap = new HashMap<>();
         returnMap.put("executionStatus",ExecutionStatusEnum.FAILED.getMsg());
-        //读取配置文件信息
-        String YamlfilePath="dc_srv/src/main/resources/app.yml";
-        Map<String, String> mailParameter = YamlUtils.getYamlByFileName(YamlfilePath);
-        String addressTo = mailParameter.get("sendMail.addressTo");
-        String defaultSubject = mailParameter.get("sendMail.subject");
+
         String address = map.get("addressTo");
         if (address==null){
             address=addressTo;
@@ -328,7 +336,7 @@ public class HiveQuery implements HiveQueryService {
         }
         String msgStr = msg.toString();
         try {
-            SendEmailUtil.sendMail(address,subject,msgStr);
+            sendEmailUtil.sendMail(address,subject,msgStr);
             returnMap.put("executionStatus",ExecutionStatusEnum.SUCCESS.getMsg());
         } catch (EmailException e) {
            logger.error(e.getMessage());

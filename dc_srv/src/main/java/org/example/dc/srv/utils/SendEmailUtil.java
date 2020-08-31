@@ -9,7 +9,6 @@ package org.example.dc.srv.utils;
  * Version: 1.0
  * Description:
  */
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -17,27 +16,40 @@ import org.example.dc.srv.enums.ExecutionStatusEnum;
 import org.example.dc.srv.service.HiveQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
+@Component
 public class SendEmailUtil {
     private static final Logger logger = LoggerFactory.getLogger(HiveQuery.class);
+    //读取配置文件
+    @Value("${sendMail.hostName}")
+    private String hostName;
 
-    public static String sendMail(String address, String subject, String msg) throws EmailException {
-        //读取配置文件信息
-        String filePath="dc_srv/src/main/resources/app.yml";
-        Map<String, String> mailParameter = YamlUtils.getYamlByFileName(filePath);
-        String hostName = mailParameter.get("sendMail.hostName");
-        String SSLOnConnect = mailParameter.get("sendMail.SSLOnConnect");
-        String smtpPort = mailParameter.get("sendMail.smtpPort");
-        String charset = mailParameter.get("sendMail.charset");
-        String addressFrom = mailParameter.get("sendMail.addressFrom");
-        String nameFrom = mailParameter.get("sendMail.nameFrom");
-        String userName = mailParameter.get("sendMail.userName");
-        String passWord = mailParameter.get("sendMail.passWord");
+    @Value("${sendMail.SSLOnConnect}")
+    private String SSLOnConnect;
 
+    @Value("${sendMail.smtpPort}")
+    private String smtpPort;
+
+    @Value("${sendMail.charset}")
+    private String charset;
+
+    @Value("${sendMail.addressFrom}")
+    private String addressFrom;
+
+    @Value("${sendMail.nameFrom}")
+    private String nameFrom;
+
+    @Value("${sendMail.userName}")
+    private String userName;
+
+    @Value("${sendMail.passWord}")
+    private String passWord;
+
+    public  String sendMail(String address, String subject, String msg) throws EmailException {
 
         String status=ExecutionStatusEnum.FAILED.getMsg();
         //参数检查
