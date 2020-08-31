@@ -23,7 +23,7 @@ public class HiveQueryTest {
         Logger logger = LoggerFactory.getLogger(HiveQueryTest.class);
         HashMap<String, String> parameter = new HashMap();
         parameter.put("queryMode","customQuery");
-        String sql="select * from easylife_app.app_easylife_order_should_sum_day where cal_day = '2020-08-17' limit 2";
+        String sql="select * from easylife_app.app_easylife_order_should_sum_day where cal_day = '2020-08-17' limit 3";
         parameter.put("querySql",sql);
         HiveQueryService hq = new HiveQuery();
         Map<String, String> result = null;

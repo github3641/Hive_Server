@@ -1,0 +1,45 @@
+<assembly>
+    <id>all</id>
+    <!-- Adds dependencies to zip package under lib directory -->
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <dependencySets>
+        <dependencySet>
+            <!--
+               不使用项目的artifact，第三方jar不要解压，打包进zip文件的lib目录
+           -->
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>/</outputDirectory>
+            <unpack>false</unpack>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>original-*.jar</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/conf</directory>
+            <outputDirectory>conf</outputDirectory>
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/logs</directory>
+            <outputDirectory>logs</outputDirectory>
+            <fileMode>0755</fileMode>
+        </fileSet>
+    </fileSets>
+</assembly>

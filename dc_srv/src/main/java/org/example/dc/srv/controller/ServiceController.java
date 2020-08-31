@@ -1,13 +1,11 @@
 package org.example.dc.srv.controller;
 
 import org.example.dc.srv.service.HiveQuery;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,19 +23,11 @@ import java.util.Set;
 public class ServiceController {
     @Autowired
     private HiveQuery hiveQuery;
+
     @RequestMapping(value="/queryToJson")
     public Map queryToJson(HttpServletRequest request){
         Map<String, String> parameterMap = getParameterMap(request);
-        Map<String, String> resultMap=null;
-        try {
-             resultMap = hiveQuery.queryDataToJson(parameterMap);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        Map<String, String> resultMap = hiveQuery.queryDataToJson(parameterMap);
         return resultMap;
     }
 
@@ -63,16 +53,21 @@ public class ServiceController {
         return resultMap;
     }
 
-
+    /**
+     * 方法说明:url中参数解析
+     * @param request
+     * @return
+     */
     private Map<String, String> getParameterMap(HttpServletRequest request) {
         Map<String, String[]> parameterMap = request.getParameterMap();
         Set<String> keys = parameterMap.keySet();
         Map<String,String> parameterMap2 = new HashMap();
-        for (String key:keys){
-            String[] value = parameterMap.get(key);
-            parameterMap2.put(key,value[0]);
+        if (parameterMap.size()!=0) {
+            for (String key : keys) {
+                String[] value = parameterMap.get(key);
+                parameterMap2.put(key, value[0]);
+            }
         }
         return parameterMap2;
     }
-
 }
