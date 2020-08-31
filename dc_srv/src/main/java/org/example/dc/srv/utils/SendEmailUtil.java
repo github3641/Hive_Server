@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 @Component
 public class SendEmailUtil {
-    private static final Logger logger = LoggerFactory.getLogger(HiveQuery.class);
+    private static final Logger logger = LoggerFactory.getLogger(SendEmailUtil.class);
     //读取配置文件
     @Value("${sendMail.hostName}")
     private String hostName;
