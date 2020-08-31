@@ -32,7 +32,7 @@ public class QueryTableSizeCron{
     private static final Logger logger = LoggerFactory.getLogger(QueryTableSizeCron.class);
 
     private final String YML_PATH = "dc_srv/src/main/resources/app.yml";
-    private final String hIVE_TABLES = "hive.tables";
+    private final String HIVE_TABLES = "hive.tables";
     private final String HIVE_DATABASE = "hive.database";
     private final String FILE_PATH = "file_path";
     private final String QUERY_MODE = "queryMode";
@@ -52,7 +52,7 @@ public class QueryTableSizeCron{
         List<String> topList = new ArrayList();
         Map<String, String> argsMap = YamlUtils.getYamlByFileName(YML_PATH);
         //获取参数值
-        String tables = argsMap.get(hIVE_TABLES);
+        String tables = argsMap.get(HIVE_TABLES);
         String database = argsMap.get(HIVE_DATABASE);
         String filePath = argsMap.get(FILE_PATH);
         String queryMode = argsMap.get(QUERY_MODE);
