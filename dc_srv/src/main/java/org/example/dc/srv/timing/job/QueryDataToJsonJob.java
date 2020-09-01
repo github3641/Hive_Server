@@ -7,6 +7,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -22,9 +24,11 @@ import java.util.Map;
  * Version: 1.0
  * Description:
  */
-public class QueryDataToJsonJob implements Job {
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+
+@Component
+@EnableScheduling
+public class QueryDataToJsonJob  {
+    public void queryDataToJson() throws JobExecutionException {
         Logger logger = LoggerFactory.getLogger(QueryDataToJsonJob.class);
         HashMap<String, String> parameter = new HashMap();
         parameter.put("queryMode","customQuery");
@@ -34,10 +38,6 @@ public class QueryDataToJsonJob implements Job {
         Map<String, String> result = null;
         try {
             result = hq.queryDataToJson(parameter);
-        } catch (SQLException e) {
-            logger.error("错误信息:"+e);
-        } catch (IOException e) {
-            logger.error("错误信息:"+e);
         }catch (Exception e){
             logger.error("错误信息:"+e);
         }
